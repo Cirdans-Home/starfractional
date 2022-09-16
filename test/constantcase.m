@@ -10,19 +10,20 @@ addpath('../src');  % Add to the path the gallery function
 %% Definition of the system
 lambda = -1;
 y0 = 1;
-alpha = 0.5;
+alpha = 0.1;
+Int = [0,0.001];
 
 %% Discretization parameters
-M = 5; % Number of basis polynomials
+M = 10; % Number of basis polynomials
 
 %% Builiding the discretization
 I = eye(M);
-FW = lambda*basisfunction(M,alpha);
-F = lambda*basisfunction(M,1);
-H = basisfunction(M,alpha);
-H = spdiags(spdiags(H,-10:10),-10:10,M,M);
-Lpol = legpoly(0:M-1,[0,1],'norm');
-rhs = F*Lpol(0).';
+FW = lambda*basisfunction(M,alpha,Int);
+F = lambda*basisfunction(M,1,Int);
+H = basisfunction(M,alpha,Int);
+%H = spdiags(spdiags(H,-10:10),-10:10,M,M);
+Lpol = legpoly(0:M-1,Int,'norm');
+rhs = F*Lpol(Int(1)).';
 
 A = I - FW;
 x = A\rhs;
@@ -35,21 +36,21 @@ ylabel('|x|')
 
 
 %% Reassembling the solution
-trunc = 14;
-Lpol = legpoly(0:trunc-1,[0,1],'norm');
+trunc = 6;
+Lpol = legpoly(0:trunc-1,Int,'norm');
 c = x(1:trunc);
 y = y0 + Lpol*c;
 
-t = linspace(0,1,100);
+t = linspace(Int(1),Int(2),100);
 figure(2)
 subplot(1,2,1);
 plot(t,y(t),'r',...
-    t,ml(lambda*t.^alpha,alpha),'k--','LineWidth',2)
+    t,ml(lambda*t.^alpha,alpha)*y0,'k--','LineWidth',2)
 xlabel('t')
 ylabel('y(t)')
 subplot(1,2,2);
-semilogy(t,abs(y(t)-ml(lambda*t.^alpha,alpha)),'r-',...
-    t,abs(y(t)-ml(lambda*t.^alpha,alpha))./abs(ml(lambda*t.^alpha,alpha)),...
+semilogy(t,abs(y(t)-ml(lambda*t.^alpha,alpha)*y0),'r-',...
+    t,abs(y(t)-ml(lambda*t.^alpha,alpha)*y0)./abs(ml(lambda*t.^alpha,alpha)*y0),...
     'k--','LineWidth',2);
 legend('Absolute Error','Relative Error')
 
