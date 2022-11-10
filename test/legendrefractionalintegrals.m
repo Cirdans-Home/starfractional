@@ -100,20 +100,20 @@ end
 %% USING GAUSS-HYPERGEOMETRIC FUNCTION
 % This is the most stable
 
-x = linspace(0,1,100);
+x = linspace(-1,1,100);
 n = 30;
 alpha = 0.5;
-I = [0,1];
-IalphaL = legfracintgauss(alpha,n,I,x);
-Lfrac = @(i) (I(2)-I(1)).^(alpha-1)*sqrt(I(2)-I(1))*...
-    polint(alpha,i,x/(I(2)-I(1)));
+IalphaL = legfracintgauss(alpha,n,x);
+I = [-1,1];
+Lfrac  = @(i) (I(2)-I(1)).^(alpha-1)*sqrt(I(2)-I(1))*polint(alpha,i,0.5*x+0.5);
 for i=0:30
     L = legpoly(i,I,"norm");
     figure(3)
     subplot(1,2,1)
     plot(x,L(x),'r-',...
-        x,IalphaL(i+1,:),'b--','LineWidth',2);
-    legend("Legendre","Gauss-Hypergeometric");
+        x,IalphaL(i+1,:),'b--',...
+        x,Lfrac(i),'k-','LineWidth',2);
+    legend("Legendre","Gauss-Hypergeometric","Horner");
     title(sprintf('degree = %d',i))
     subplot(1,2,2)
     plot(x,abs(IalphaL(i+1,:)-Lfrac(i)),'k--','LineWidth',2);
