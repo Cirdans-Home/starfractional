@@ -23,11 +23,11 @@ M = str2double(userinput{2}); % Number of basis polynomials
 
 %% Builiding the discretization
 I = eye(M);
-FW = lambda*basisfunction(M,alpha,Int);
-F = lambda*basisfunction(M,1,Int);
-H = basisfunction(M,alpha,Int);
+FW = lambda*basisfunction(M,alpha);
+TM = lambda*basisfunction(M,1);
+H = basisfunction(M,alpha);
 Lpol = legpoly(0:M-1,Int,'norm');
-rhs = F*Lpol(Int(1)).';
+rhs = TM*Lpol(Int(1)).';
 
 A = I - FW;
 x = A\rhs;
