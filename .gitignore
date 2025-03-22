@@ -1,2 +1,5 @@
 chebfun
 *.asv
+# Tex
+# Avoid committing to the repository TeX and LaTeX files
+*.tex
