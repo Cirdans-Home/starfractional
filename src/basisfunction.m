@@ -10,13 +10,12 @@ function A = basisfunction(m,alpha)
 %quadrature on 2m nodes.
 %
 
-I = [-1,1];
 A = zeros(m,m);
 [xi,omega] = lobpts(2*m);
 fracpolval = legfracintgauss(alpha,m,xi);
 
 for i=1:m
-    Li = legpoly(i-1,I,'norm');
+    Li = legpoly(i-1,[-1,1],'norm');
     for j=1:m
         A(i,j) = omega*(Li(xi).*fracpolval(j,:).');
     end
