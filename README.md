@@ -4,9 +4,9 @@ This repository contains the accompanying code for the article: "⋆-fractional:
 
 ## Collaborators
 
-- Fabio Durastante [:email:](fabio.durastante@unipi.it)
-- Pierre-Louis Giscard [:email:](giscard@univ-littoral.fr)
-- Stefano Pozza [:email](pozza@karlin.mff.cuni.cz)
+- Fabio Durastante [:email:](mailto:fabio.durastante@unipi.it)
+- Pierre-Louis Giscard [:email:](mailto:giscard@univ-littoral.fr)
+- Stefano Pozza [:email:](mailto:pozza@karlin.mff.cuni.cz)
 
 ## External code
 
