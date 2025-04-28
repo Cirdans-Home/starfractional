@@ -24,7 +24,16 @@ for k=1:m
     end
     if k < n
        H(k+1,k) = norm(z);
-       if abs(H(k+1,k)) < 1e-12, return, end
+       if abs(H(k+1,k)) < 1e-12,
+	  H = H(1:k,1:k);
+	  Q = Q(:,1:k);
+	  return
+       end
        Q(:,k+1) = z/H(k+1,k);
    end
 end
+
+H = H(1:m,1:m);
+Q = Q(:,1:m);
+
+

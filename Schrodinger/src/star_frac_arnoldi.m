@@ -16,8 +16,8 @@ Tal = Tsch^alpha;
 [Q,Hes] = arnoldi(conj(A),u0vec,max_it);    % It works only for B = 0
 [~, nit] = size(Hes);
 e1n = speye(nit,1);
-Y = dlyap(Tal,Hes(1:end-1,:)', phisch*norm(u0vec)*e1n.');
-X = Usch*Y*Q(:,1:end-1)';
+Y = dlyap(Tal,Hes', phisch*norm(u0vec)*e1n.');
+X = Usch*Y*Q';
 u_leg = Hleg*X*2/(tf-t0);
 
 end
