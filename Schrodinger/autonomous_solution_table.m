@@ -45,7 +45,7 @@ for Hmax = [0.3,0.1,0.05]
     %% Benchmark Solution
     % This is going to be slow!
     
-    h = 1e-6;
+    h = 1e-5;
     filename = sprintf("fracsolve_HMAX%1.3f_h%1.2e.mat",Hmax,h);
     if ~exist(filename,"file")
         jfun = @(t,u) A;
@@ -53,7 +53,7 @@ for Hmax = [0.3,0.1,0.05]
             @(t,u) jfun(t,u),tspan(1),tspan(2),u0vec,h,...
             [],method);
         savefile = sprintf("src/%s",filename);
-        save(savefile,"tlist","u")
+        save(savefile,"tlist","u",'-v7.3')
     else
         load(filename)
     end

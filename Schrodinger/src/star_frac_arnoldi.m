@@ -11,7 +11,11 @@ Tsch = schur_hside.T*(tf-t0)/2;
 phisch = schur_hside.Uphi;
 Hleg = schur_hside.Hleg*(tf-t0)/2;
 
-Tal = Tsch^alpha;
+if verLessThan('matlab','24.2')
+    Tal = expm(alpha*logm(Tsch)); 
+else
+    Tal = Tsch^alpha;
+end
 
 [Q,Hes] = arnoldi(conj(A),u0vec,max_it);    % It works only for B = 0
 [~, nit] = size(Hes);
