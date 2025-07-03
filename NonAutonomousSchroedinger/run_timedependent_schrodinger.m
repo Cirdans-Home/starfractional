@@ -144,6 +144,7 @@ for Hmax = [0.3,0.1]
     %% Repeated solution by FLMM2
     for h = [1e-1,1e-2,1e-3,1e-4]
         tic;
+        jfun = @(t,u) jfunt(t,FEM,K0,K1-K0,ft,str);
         [tlist,uh] = flmm2(alpha, @(t,u) odefun(t,u),...
             @(t,u) jfun(t,u),tspan(1),tspan(2),u0vec,h,...
             []);
