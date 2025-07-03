@@ -73,24 +73,37 @@ for Hmax = [0.3,0.1]
     end
 
     %% Solve the ODE by star-approach
-    for m = [100,500,1000]
+    for m = [100,250,500,750,1000,1500,2000,2500]
         tic
-        fD{1} = @(t) (ft(t)-ft(0))/(ft(1)-ft(0));  % scalar function of the time-dependent part
-        fT{1} = @(t) 1 + 0*t; % It will produce the Heaviside function
+        if abs(ft(1)-ft(0)) > 1e-13
+            fD{1} = @(t) (ft(t)-ft(0))/(ft(1)-ft(0));  % scalar function of the time-dependent part
+        else
+            fD{1} = @(t) ft(0) + 0*t;
+            warning('division by zero in f(t) interp')
+        end        
 
         trunc = 0;  % No automatic truncation of the last part of the coeff matrices
-        [FlegT, ~] = genCoeffMatrix_SP_interval(fT,m,[t0,tf],trunc); % It generates the f(t)Theta(t-s) coeff matrix
-        H = sparse(FlegT{2}*(tf-t0)/2); % Heaviside function coeff matrix
         [FlegD, ~] = genCoeffMatrix_delta_SP(fD,m,[t0,tf]); % It generates the f(t)delta(t-s) coeff matrix
         F2D = sparse(FlegD{1})*2/(tf-t0); % coeff matrix of fF{1}(t)delta(t-s)
+    
+        % Load from file
+        name = ['schur_hside_',num2str(m),'.mat'];
+        load(name)
+        Usch = schur_hside.U;
+        Tsch = schur_hside.T*(tf-t0)/2;
+        phisch = schur_hside.Uphi;
+        Hleg = schur_hside.Hleg*(tf-t0)/2;
+
 
         if verLessThan('matlab','24.2')
-            Hal = expm(alpha*logm(H));       % Heaviside to the alpha
-            H1mal = expm((1-alpha)*logm(H)); % Heaviside to the 1-alpha
+            Tal = expm(alpha*logm(Tsch));
+            T1mal = expm((1-alpha)*logm(Tsch));
         else
-            Hal = H^alpha;  % Heaviside to the alpha
-            H1mal = H^(1-alpha);  % Heaviside to the 1-alpha
+            Tal = Tsch^alpha;
+            T1mal = Tsch^(1-alpha);
         end
+        Hal = Usch*Tal*Usch';
+        H1mal = Usch*T1mal*Usch';
         % AA{1} = full(-(B0*(M0\(K0*B0'))).'); AA{2} = full(-(B0*(M0\((K1-K0)*B0'))).');
         FF{1} = Hal; FF{2} = F2D*Hal;  % coefficient matrix in the resolvent
 
@@ -103,15 +116,17 @@ for Hmax = [0.3,0.1]
 
         d= length(u0vec);
 
-        % Solution of the system by gmres
-        % aprod = @(V) reshape(V - FF{1}*V*AA{1} - FF{2}*V*AA{2},m*d,1);
-        tol = 1e-3;
-        maxit = 300;
-        aprod = @(V) reshape((V.' + B0*(M0\( K0*B0'*(V.'*FF{1}.') + (K1-K0)*B0'*(V.'*FF{2}.')))).',m*d,1);
-        [x,flag,relres,nit,res] = gmres(@(v)aprod(reshape(v,m,d)), kron(u0vec,H1aphi),[],tol,maxit);
-        X = reshape(x,m,d);  % solution of the corresponding matrix equation
-        u_leg = Hal*X*2/(tf-t0); % leg coeff of the solution
+        % Solution of the system by iterative method
+        maxit = 20;     % max n. it. (outer iterations)
+        tol = 1e-7;     % tol estimated residual stop crit. (outer iterations)
+        it_arn = ceil(2*log(d)); % it. Arnoldi (inner iterations)
+        trunc = 1e-9;  % svd truncation tol (outer iterations)
+
+        [u_leg_left, u_leg_right, svec, res, flag, left, right] = it_LR_block_arnoldi(B0, M0, K0, K1, u0vec, H1aphi, maxit, tol, it_arn, trunc, FF, Tal, Usch, Hal, t0, tf);
+
         time_star = toc;
+        u_leg = u_leg_left*u_leg_right.';
+        X = right*left.';
         %% To compute the error with check the results
         err = NaN(m,1);
         for k = 1:m
