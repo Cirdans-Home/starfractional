@@ -1,6 +1,6 @@
-# ⋆-fractional: solving linear nonautonomous fractional differential equations
+# ⋆-Product Approach for Analytical and Discrete Solutions of Nonautonomous Linear Fractional Differential Equations
 
-This repository contains the accompanying code for the article: "⋆-fractional: solving linear nonautonomous fractional differential equations."
+This repository contains the accompanying code for the article: "⋆-Product Approach for Analytical and Discrete Solutions of Nonautonomous Linear Fractional Differential Equations"
 
 ## Collaborators
 
