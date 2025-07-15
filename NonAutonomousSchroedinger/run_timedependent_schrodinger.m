@@ -4,6 +4,7 @@ addpath('src')
 addpath('chebfun');
 fid = fopen('output_table.txt','a+');
 fprintf(fid,"Date: %s\n\n",string(datetime));
+doflmm = true;
 
 % Parameters
 for Hmax = [0.3,0.1]
@@ -73,8 +74,13 @@ for Hmax = [0.3,0.1]
     end
 
     %% Solve the ODE by star-approach
-    for m = [100,250,500,750,1000,1500,2000,2500]
-        tic
+    for m = [3000,3500] % [100,250,500,750,1000,1500,2000,2500]
+	filename = sprintf("src/schur_hside_%d.mat",m);
+	if ~exist(filename,"file")
+    		warning("Asked for a non existing basis size: precomputing it");
+    		gen_schur_hside(m,'schur_hside');
+	end
+    	tic
         if abs(ft(1)-ft(0)) > 1e-13
             fD{1} = @(t) (ft(t)-ft(0))/(ft(1)-ft(0));  % scalar function of the time-dependent part
         else
@@ -142,6 +148,7 @@ for Hmax = [0.3,0.1]
     end
 
     %% Repeated solution by FLMM2
+    if doflmm
     for h = [1e-1,1e-2,1e-3,1e-4]
         tic;
         jfun = @(t,u) jfunt(t,FEM,K0,K1-K0,ft,str);
@@ -153,6 +160,10 @@ for Hmax = [0.3,0.1]
         relerr = abserr/norm(u(:,end));
         fprintf("%1.2e & %1.2f & %1.2e & %1.2e \\\\\n",h,time_flmm2,abserr,relerr);
         fprintf(fid,"%1.2e & %1.2f & %1.2e & %1.2e \\\\\n",h,time_flmm2,abserr,relerr);
+    end
+    else
+	fprintf("Skipping flmm\n");
+	fprintf(fid,"\\\\\n");
     end
 end
 
@@ -186,22 +197,20 @@ end
 function u1 = odefunt(t,u,FEM,K0,Kft,ft,str)
 state.time = t;
 switch str
-    case "stiff-spring"
-        % u1= FEM.M\(-FEM.Ks*u -FEM.Fs);
     case "nullspace"
         Kc = (Kft)*(ft(t)-ft(0))/(ft(1)-ft(0)) + K0;
         u1 = FEM.B*(FEM.M\(- Kc*(FEM.B'*u) - FEM.Fc)) + FEM.ud;
+    otherwise
+	error("Non existing case");
 end
 end
 
 function u1 = jfunt(t,FEM,K0,Kft,ft,str)
-% state.time = t;
-% FEM = assembleFEMatrices(model,str,state);
 switch str
-    case "stiff-spring"
-        % u1= FEM.M\(-FEM.Ks);
     case "nullspace"
         Kc = (Kft)*(ft(t)-ft(0))/(ft(1)-ft(0)) + K0;
         u1 = FEM.B*(FEM.M\(- Kc*FEM.B'));
+    otherwise
+	error("Non existing case");
 end
 end

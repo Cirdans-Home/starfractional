@@ -20,7 +20,11 @@ for k = 1:maxit
     Aright = [Aright, FF{2}*right];
 
     % Step 2: Truncated SVD
-    [Q, R] = qr(Aright, 'econ');
+    if verLessThan('matlab','24.2')
+        [Q, R] = qr(Aright, 0);
+    else
+        [Q, R] = qr(Aright, 'econ');
+    end
     [UX, SX, VX] = svd(full(Aleft*R.'), 0);
     s_index = find(diag(SX) < trunc * SX(1,1), 1);
     if isempty(s_index)
@@ -35,12 +39,8 @@ for k = 1:maxit
     A0fun = @(x) -B0*(M0\(K0*B0'*x));
     [VK0, J0, nita, flag(k)] = block_arnoldi(A0fun, Aleft, nit);
     nita = nita-1;
-    % J = VK0(:,1:(nita)*s_index)' * (-B0*(M0\(K0*B0'))) * VK0(:,1:(nita)*s_index);
     J = J0(1:(nita)*s_index,1:(nita)*s_index);
-    % E1 = sparse((nita)*s_index, s_index);
-    % E1(1:s_index,1:s_index) = speye(s_index,s_index);
     Y = dlyap(J, Tal.', VK0(:,1:(nita)*s_index)' * Aleft * (Aright.' * conj(Usch)));
-    % Y = dlyap(J, Tal.',  E1 * norm(Aleft) * (Aright.' * conj(Usch)));
 
     % Step 4: Update left, right
     left = VK0(:,1:(nita)*s_index);
