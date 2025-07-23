@@ -1,6 +1,19 @@
-# ⋆-Product Approach for Analytical and Discrete Solutions of Nonautonomous Linear Fractional Differential Equations
+# ⋆-Product Approach for Analytical and Numerical Solutions of Nonautonomous Linear Fractional Differential Equations
 
-This repository contains the accompanying code for the article: "⋆-Product Approach for Analytical and Discrete Solutions of Nonautonomous Linear Fractional Differential Equations"
+This repository contains the accompanying code for the article: "⋆-Product Approach for Analytical and Numerical Solutions of Nonautonomous Linear Fractional Differential Equations" ([arXiv: 2507.16652](http://arxiv.org/abs/2507.16652)).
+
+If you use this code please cite the work:
+```bibtex
+@misc{durastante2025starproductapproachanalyticalnumerical,
+      title={A $\star$-Product Approach for Analytical and Numerical Solutions of Nonautonomous Linear Fractional Differential Equations}, 
+      author={Fabio Durastante and Pierre-Louis Giscard and Stefano Pozza},
+      year={2025},
+      eprint={2507.16652},
+      archivePrefix={arXiv},
+      primaryClass={math.NA},
+      url={https://arxiv.org/abs/2507.16652}, 
+}
+```
 
 ## Collaborators
 
